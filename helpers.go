@@ -4,13 +4,15 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/valyala/fasthttp"
 )
 
 func FasthttpHTTPDialer(proxyAddr string) fasthttp.DialFunc {
 	return func(addr string) (net.Conn, error) {
-		conn, err := fasthttp.Dial(proxyAddr)
+
+		conn, err := fasthttp.Dial(strings.Replace(strings.Replace(proxyAddr, "https://", "", 1), "http://", "", 1))
 		if err != nil {
 			return nil, err
 		}
