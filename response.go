@@ -1,7 +1,6 @@
 package fcm
 
 import (
-	"encoding/json"
 	"errors"
 )
 
@@ -121,79 +120,12 @@ type Response struct {
 	Error     string `json:"error"`
 }
 
-// UnmarshalJSON implements json.Unmarshaler interface.
-func (r *Response) UnmarshalJSON_ORIGINAL(data []byte) error {
-	var response struct {
-		MulticastID  int64    `json:"multicast_id"`
-		Success      int      `json:"success"`
-		Failure      int      `json:"failure"`
-		CanonicalIDs int      `json:"canonical_ids"`
-		Results      []Result `json:"results"`
-
-		// Device Group HTTP Response
-		FailedRegistrationIDs []string `json:"failed_registration_ids"`
-
-		// Topic HTTP response
-		MessageID int64  `json:"message_id"`
-		Error     string `json:"error"`
-	}
-
-	if err := json.Unmarshal(data, &response); err != nil {
-		return err
-	}
-
-	r.MulticastID = response.MulticastID
-	r.Success = response.Success
-	r.Failure = response.Failure
-	r.CanonicalIDs = response.CanonicalIDs
-	r.Results = response.Results
-	r.Success = response.Success
-	r.FailedRegistrationIDs = response.FailedRegistrationIDs
-	r.MessageID = response.MessageID
-	if response.Error != "" {
-		if val, ok := errMap[response.Error]; ok {
-			r.Error = val.Error()
-		} else {
-			r.Error = ErrUnknown.Error()
-		}
-	}
-
-	return nil
-}
-
 // Result represents the status of a processed message.
 type Result struct {
 	MessageID      string `json:"message_id"`
 	RegistrationID string `json:"registration_id"`
 	Error          string `json:"error"`
 }
-
-/*
-// UnmarshalJSON implements json.Unmarshaler interface.
-func (r *Result) UnmarshalJSON_ORIGINAL(data []byte) error {
-	var result struct {
-		MessageID      string `json:"message_id"`
-		RegistrationID string `json:"registration_id"`
-		Error          string `json:"error"`
-	}
-
-	if err := json.Unmarshal(data, &result); err != nil {
-		return err
-	}
-
-	r.MessageID = result.MessageID
-	r.RegistrationID = result.RegistrationID
-	if result.Error != "" {
-		if val, ok := errMap[result.Error]; ok {
-			r.Error = val
-		} else {
-			r.Error = ErrUnknown
-		}
-	}
-
-	return nil
-}
-*/
 
 func GetErrorByString(errString string) error {
 	if val, ok := errMap[errString]; ok {
