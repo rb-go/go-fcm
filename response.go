@@ -106,7 +106,6 @@ func (serverError) Timeout() bool {
 
 // Response represents the FCM server's response to the application
 // server's sent message.
-// ffjson: noencoder
 type Response struct {
 	MulticastID  int64    `json:"multicast_id"`
 	Success      int      `json:"success"`
@@ -118,12 +117,12 @@ type Response struct {
 	FailedRegistrationIDs []string `json:"failed_registration_ids"`
 
 	// Topic HTTP response
-	MessageID int64 `json:"message_id"`
-	Error     error `json:"error"`
+	MessageID int64  `json:"message_id"`
+	Error     string `json:"error"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler interface.
-func (r *Response) UnmarshalJSON(data []byte) error {
+func (r *Response) UnmarshalJSON_ORIGINAL(data []byte) error {
 	var response struct {
 		MulticastID  int64    `json:"multicast_id"`
 		Success      int      `json:"success"`
@@ -153,9 +152,9 @@ func (r *Response) UnmarshalJSON(data []byte) error {
 	r.MessageID = response.MessageID
 	if response.Error != "" {
 		if val, ok := errMap[response.Error]; ok {
-			r.Error = val
+			r.Error = val.Error()
 		} else {
-			r.Error = ErrUnknown
+			r.Error = ErrUnknown.Error()
 		}
 	}
 
@@ -163,15 +162,15 @@ func (r *Response) UnmarshalJSON(data []byte) error {
 }
 
 // Result represents the status of a processed message.
-// ffjson: noencoder
 type Result struct {
 	MessageID      string `json:"message_id"`
 	RegistrationID string `json:"registration_id"`
-	Error          error  `json:"error"`
+	Error          string `json:"error"`
 }
 
+/*
 // UnmarshalJSON implements json.Unmarshaler interface.
-func (r *Result) UnmarshalJSON(data []byte) error {
+func (r *Result) UnmarshalJSON_ORIGINAL(data []byte) error {
 	var result struct {
 		MessageID      string `json:"message_id"`
 		RegistrationID string `json:"registration_id"`
@@ -194,15 +193,14 @@ func (r *Result) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
-
+*/
 // Unregistered checks if the device token is unregistered,
 // according to response from FCM server. Useful to determine
 // if app is uninstalled.
 func (r Result) Unregistered() bool {
 	switch r.Error {
-	case ErrNotRegistered, ErrMismatchSenderID, ErrMissingRegistration, ErrInvalidRegistration:
+	case ErrNotRegistered.Error(), ErrMismatchSenderID.Error(), ErrMissingRegistration.Error(), ErrInvalidRegistration.Error():
 		return true
-
 	default:
 		return false
 	}

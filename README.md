@@ -20,8 +20,8 @@ More information on [Firebase Cloud Messaging](https://firebase.google.com/docs/
 
 * [x] Go modules with semantic versioning
 * [x] valyala/fasthttp client instead of net/http
-* [x] pquerna/ffjson client instead of encoding/json
-* [x] Send returns original body too (if FCM answer changed you can parse by yourself and not wait for package update)
+* [x] mailru/easyjson client instead of encoding/json
+* [x] Send() returns original body ([]byte) too (if FCM answer changed you can parse by yourself and not wait for package update)
 * [x] Some optimizations 
 
 

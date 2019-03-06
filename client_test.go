@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/valyala/fasthttp"
 )
 
 func TestSend(t *testing.T) {
@@ -32,7 +34,7 @@ func TestSend(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.Send(&Message{
+		resp, _, err := client.Send(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",
@@ -42,7 +44,7 @@ func TestSend(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 		if resp.Success != 1 {
-			t.Fatalf("expected 1 successes\ngot: %d sucesses", resp.Success)
+			t.Fatalf("expected 1 successes\ngot: %d successes", resp.Success)
 		}
 		if resp.Failure != 0 {
 			t.Fatalf("expected 0 failures\ngot: %d failures", resp.Failure)
@@ -62,7 +64,7 @@ func TestSend(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.Send(&Message{
+		resp, _, err := client.Send(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",
@@ -89,7 +91,7 @@ func TestSend(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		_, err = c.Send(&Message{})
+		_, _, err = c.Send(&Message{})
 		if err == nil {
 			t.Fatal("expected error but go nil")
 		}
@@ -116,12 +118,12 @@ func TestSend(t *testing.T) {
 
 		client, err := NewClient("test",
 			WithEndpoint(server.URL),
-			WithHTTPClient(&http.Client{}),
+			WithHTTPClient(&fasthttp.Client{}),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.Send(&Message{
+		resp, _, err := client.Send(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",
@@ -159,12 +161,12 @@ func TestSendWithRetry(t *testing.T) {
 
 		client, err := NewClient("test",
 			WithEndpoint(server.URL),
-			WithHTTPClient(&http.Client{}),
+			WithHTTPClient(&fasthttp.Client{}),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.SendWithRetry(&Message{
+		resp, _, err := client.SendWithRetry(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",
@@ -192,12 +194,12 @@ func TestSendWithRetry(t *testing.T) {
 
 		client, err := NewClient("test",
 			WithEndpoint(server.URL),
-			WithHTTPClient(&http.Client{}),
+			WithHTTPClient(&fasthttp.Client{}),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.SendWithRetry(&Message{
+		resp, _, err := client.SendWithRetry(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",
@@ -240,12 +242,12 @@ func TestSendWithRetry(t *testing.T) {
 
 		client, err := NewClient("test",
 			WithEndpoint(server.URL),
-			WithHTTPClient(&http.Client{}),
+			WithHTTPClient(&fasthttp.Client{}),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.SendWithRetry(&Message{
+		resp, _, err := client.SendWithRetry(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",
@@ -269,15 +271,15 @@ func TestSendWithRetry(t *testing.T) {
 	t.Run("send_with_retry=failure_retry", func(t *testing.T) {
 		client, err := NewClient("test",
 			WithEndpoint("127.0.0.1:80"),
-			WithHTTPClient(&http.Client{
+			WithHTTPClient(&fasthttp.Client{
 
-				Timeout: time.Nanosecond,
+				ReadTimeout: time.Nanosecond,
 			}),
 		)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		resp, err := client.SendWithRetry(&Message{
+		resp, _, err := client.SendWithRetry(&Message{
 			To: "test",
 			Data: map[string]interface{}{
 				"foo": "bar",

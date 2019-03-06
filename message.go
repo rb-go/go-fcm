@@ -21,7 +21,6 @@ var (
 
 // Notification specifies the predefined, user-visible key-value pairs of the
 // notification payload.
-// ffjson: nodecoder
 type Notification struct {
 	Title        string `json:"title,omitempty"`
 	Body         string `json:"body,omitempty"`
@@ -40,7 +39,6 @@ type Notification struct {
 
 // Message represents list of targets, options, and payload for HTTP JSON
 // messages.
-// ffjson: nodecoder
 type Message struct {
 	To                       string                 `json:"to,omitempty"`
 	RegistrationIDs          []string               `json:"registration_ids,omitempty"`

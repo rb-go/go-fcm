@@ -1,15 +1,11 @@
 package fcm
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
-	"github.com/pquerna/ffjson/ffjson"
 	"github.com/valyala/fasthttp"
 )
 
@@ -72,7 +68,7 @@ func (c *Client) Send(msg *Message) (*Response, []byte, error) {
 	}
 
 	// marshal message
-	data, err := ffjson.Marshal(msg)
+	data, err := msg.MarshalJSON()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -88,7 +84,7 @@ func (c *Client) SendWithRetry(msg *Message, retryAttempts int) (*Response, []by
 		return nil, nil, err
 	}
 	// marshal message
-	data, err := ffjson.Marshal(msg)
+	data, err := json.Marshal(msg)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -110,40 +106,39 @@ func (c *Client) SendWithRetry(msg *Message, retryAttempts int) (*Response, []by
 // send sends a request.
 func (c *Client) send(data []byte) (*Response, []byte, error) {
 	// create request
-	req, err := http.NewRequest("POST", c.endpoint, bytes.NewBuffer(data))
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+
+	req.SetRequestURI(c.endpoint)
+	req.Header.SetMethod("POST")
+	req.SetBody(data)
+
+	req.Header.Set("Authorization", fmt.Sprintf("key=%s", c.apiKey))
+	req.Header.Set("Content-Type", "application/json")
+
+	// create response
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	err := c.client.DoTimeout(req, resp, c.timeout)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp.Body(), connectionError(err.Error())
 	}
-
-	// request with timeout
-	ctx, cancel := context.WithTimeout(context.TODO(), c.timeout)
-	defer cancel()
-	req = req.WithContext(ctx)
-
-	// add headers
-	req.Header.Add("Authorization", fmt.Sprintf("key=%s", c.apiKey))
-	req.Header.Add("Content-Type", "application/json")
-
-	// execute request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, nil, connectionError(err.Error())
-	}
-	defer resp.Body.Close()
 
 	// check response status
-	if resp.StatusCode != http.StatusOK {
-		if resp.StatusCode >= http.StatusInternalServerError {
-			return nil, serverError(fmt.Sprintf("%d error: %s", resp.StatusCode, resp.Status))
+	if resp.StatusCode() != fasthttp.StatusOK {
+		if resp.StatusCode() >= fasthttp.StatusInternalServerError {
+			return nil, resp.Body(), serverError(fmt.Sprintf("%d error: %s", resp.StatusCode(), fasthttp.StatusMessage(resp.StatusCode())))
 		}
-		return nil, fmt.Errorf("%d error: %s", resp.StatusCode, resp.Status)
+		return nil, resp.Body(), fmt.Errorf("%d error: %s", resp.StatusCode(), fasthttp.StatusMessage(resp.StatusCode()))
 	}
 
 	// build return
 	response := new(Response)
-	if err := json.NewDecoder(resp.Body).Decode(response); err != nil {
+
+	if err := response.UnmarshalJSON(resp.Body()); err != nil {
 		return nil, nil, err
 	}
 
-	return response, nil, nil
+	return response, resp.Body(), nil
 }

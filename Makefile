@@ -8,8 +8,8 @@ prepare:
 	go mod tidy
 
 generate: prepare
-	ffjson -force-regenerate message.go
-	ffjson -force-regenerate response.go
+	easyjson -all ./message.go
+	easyjson -all ./response.go
 
 test: prepare
 	go test -json ./...
