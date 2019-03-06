@@ -194,14 +194,31 @@ func (r *Result) UnmarshalJSON_ORIGINAL(data []byte) error {
 	return nil
 }
 */
-// Unregistered checks if the device token is unregistered,
-// according to response from FCM server. Useful to determine
-// if app is uninstalled.
-func (r Result) Unregistered() bool {
-	switch r.Error {
-	case ErrNotRegistered.Error(), ErrMismatchSenderID.Error(), ErrMissingRegistration.Error(), ErrInvalidRegistration.Error():
+
+func GetErrorByString(errString string) error {
+	if val, ok := errMap[errString]; ok {
+		return val
+	}
+	return ErrUnknown
+}
+
+func IsUnregisterByError(err error) bool {
+	switch err {
+	case ErrNotRegistered, ErrMismatchSenderID, ErrMissingRegistration, ErrInvalidRegistration:
 		return true
+
 	default:
 		return false
 	}
+}
+
+func IsUnregisterByString(errString string) bool {
+	switch GetErrorByString(errString) {
+	case ErrNotRegistered, ErrMismatchSenderID, ErrMissingRegistration, ErrInvalidRegistration:
+		return true
+
+	default:
+		return false
+	}
+
 }
