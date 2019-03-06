@@ -212,7 +212,7 @@ func IsUnregisterByError(err error) bool {
 	}
 }
 
-func IsUnregisterByString(errString string) bool {
+func IsUnregisterByErrorString(errString string) bool {
 	switch GetErrorByString(errString) {
 	case ErrNotRegistered, ErrMismatchSenderID, ErrMissingRegistration, ErrInvalidRegistration:
 		return true
