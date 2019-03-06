@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/valyala/fasthttp"
@@ -43,10 +44,16 @@ func NewClient(apiKey string, opts ...Option) (*Client, error) {
 	if apiKey == "" {
 		return nil, ErrInvalidAPIKey
 	}
+
+	httpclient := fasthttp.Client{}
+	if proxy := os.Getenv("HTTPS_PROXY"); proxy != "" {
+		httpclient.Dial = FasthttpHTTPDialer(proxy)
+	}
+
 	c := &Client{
 		apiKey:   apiKey,
 		endpoint: DefaultEndpoint,
-		client:   &fasthttp.Client{},
+		client:   &httpclient,
 		timeout:  DefaultTimeout,
 	}
 	for _, o := range opts {
