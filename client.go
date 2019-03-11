@@ -16,6 +16,12 @@ const (
 
 	// DefaultTimeout duration in second
 	DefaultTimeout time.Duration = 30 * time.Second
+
+	// PriorityHigh high priority for push message
+	PriorityHigh = "high"
+
+	// PriorityNormal normal priority for push message
+	PriorityNormal = "normal"
 )
 
 var (
@@ -56,6 +62,7 @@ func NewClient(apiKey string, opts ...Option) (*Client, error) {
 		client:   &httpclient,
 		timeout:  DefaultTimeout,
 	}
+
 	for _, o := range opts {
 		if err := o(c); err != nil {
 			return nil, err
@@ -142,7 +149,6 @@ func (c *Client) send(data []byte) (*Response, []byte, error) {
 
 	// build return
 	response := new(Response)
-
 	if err := response.UnmarshalJSON(resp.Body()); err != nil {
 		return nil, nil, err
 	}
