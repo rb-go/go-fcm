@@ -6,6 +6,14 @@
 
 This project basicly was forked from [github.com/edganiukov/fcm](https://github.com/edganiukov/fcm) and [github.com/appleboy/go-fcm](https://github.com/appleboy/go-fcm).
 
+## Difference with appleboy package
+
+* [x] Go modules with semantic versioning
+* [x] valyala/fasthttp client instead of net/http
+* [x] mailru/easyjson client instead of encoding/json
+* [x] Send() returns original body ([]byte) too (if FCM answer changed you can parse by yourself and not wait for package update)
+* [x] Some optimizations 
+
 Golang client library for Firebase Cloud Messaging. Implemented only [HTTP client](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream).
 
 More information on [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/)
@@ -15,15 +23,6 @@ More information on [Firebase Cloud Messaging](https://firebase.google.com/docs/
 * [x] Send messages to a topic
 * [x] Send messages to a device list
 * [x] Supports condition attribute (fcm only)
-
-## Difference with appleboy package
-
-* [x] Go modules with semantic versioning
-* [x] valyala/fasthttp client instead of net/http
-* [x] mailru/easyjson client instead of encoding/json
-* [x] Send() returns original body ([]byte) too (if FCM answer changed you can parse by yourself and not wait for package update)
-* [x] Some optimizations 
-
 
 ## Getting Started
 
