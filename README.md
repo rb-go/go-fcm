@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/riftbit/gofcm?status.svg)](https://godoc.org/github.com/riftbit/gofcm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/riftbit/gofcm)](https://goreportcard.com/report/github.com/riftbit/gofcm)
 
-This project basicly was forked from [github.com/edganiukov/fcm](https://github.com/edganiukov/fcm) and [github.com/appleboy/go-fcm](https://github.com/appleboy/go-fcm).
+This project basicly was forked from [github.com/appleboy/go-fcm](https://github.com/appleboy/go-fcm).
 
 ## Difference with appleboy package
 
