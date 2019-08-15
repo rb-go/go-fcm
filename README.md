@@ -1,5 +1,5 @@
-# go-fcm
-(in beta!)
+# gofcm
+(in beta but works in production :) )
 
 [![GoDoc](https://godoc.org/github.com/riftbit/gofcm?status.svg)](https://godoc.org/github.com/riftbit/gofcm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/riftbit/gofcm)](https://goreportcard.com/report/github.com/riftbit/gofcm)
